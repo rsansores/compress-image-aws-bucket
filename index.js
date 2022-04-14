@@ -6,8 +6,8 @@
 const Jimp = require("jimp");
 const AWS = require('aws-sdk');
 const fs = require('fs');
+const s3 = new AWS.S3();
 
-var s3 = new AWS.S3();
 const LOCATION = '/tmp/';
 
 /**
@@ -24,7 +24,7 @@ exports.handler = async (event) => {
 
 async function compress(task){
     const { Body } = await s3.getObject({
-	Bucket	: 'media-photo-us-west-2-dev',
+	Bucket	: process.env.SOURCE_BUCKET,
 	Key	: task.s3Key 
     }).promise();
     fs.writeFileSync(LOCATION + task.s3Key, Body);
@@ -34,7 +34,7 @@ async function compress(task){
     const newImg = await img.quality(30).writeAsync(LOCATION + task.s3Key+'.jpg');
     const compressedImage = fs.readFileSync(LOCATION + task.s3Key + '.jpg');
     const data = await s3.upload({
-	Bucket  : 'media-photo-us-west-2-dev-slim',
+	Bucket  : process.env.DEST_BUCKET,
         Key     : task.s3Key,
 	Body    : compressedImage
     }).promise();
