@@ -40,7 +40,6 @@ async function compress(task){
     }).promise();
     fs.unlinkSync(LOCATION + task.s3Key);
     fs.unlinkSync(LOCATION + task.s3Key+'.jpg');
-);
     return {
       taskId: task.taskId,
       resultCode: "Succeeded",
